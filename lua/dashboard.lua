@@ -1,10 +1,12 @@
 require 'cairo'
 
 function hex2rgb(hex)
-	if hex ~= nil then
-		hex = hex:gsub("#","")
-		return (tonumber("0x"..hex:sub(1,2))/255), (tonumber("0x"..hex:sub(3,4))/255), tonumber(("0x"..hex:sub(5,6))/255)
+	if hex == nil then
+		hex = "#404047"
 	end
+
+	hex = hex:gsub("#","")
+	return (tonumber("0x"..hex:sub(1,2))/255), (tonumber("0x"..hex:sub(3,4))/255), tonumber(("0x"..hex:sub(5,6))/255)
 end
 
 function fix_text(text)
@@ -66,8 +68,13 @@ function draw_weather(cr, w, h)
 	temp_c = conky_parse("${exec head -n1 ~/.conky/conky-dashboard/.weather.txt}")
 	if tonumber(temp_c) ~= nil then
 		temp_c = string.format("%.0f", temp_c)
+		temp_c = temp_c .. "˚C"
 	else
 		temp_c = "N/A"
+	end
+
+	if icon == nil then
+		icon = ""
 	end
 
 	cairo_set_source_rgba(cr, r4, g4, b4, t)
@@ -82,9 +89,25 @@ function draw_weather(cr, w, h)
 	cairo_select_font_face (cr, "Overpass", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
 	cairo_set_font_size(cr, 52)
 	ct_temperature = cairo_text_extents_t:create()
-	cairo_text_extents(cr,temp_c .. "˚C",ct_temperature)
+	cairo_text_extents(cr,temp_c,ct_temperature)
 	cairo_move_to(cr,w/2-ct_temperature.width-20,ct_weather.height/2+ct_clock.height+ct_date.height-ct_temperature.height/2+142)
-	cairo_show_text(cr,temp_c .. "˚C")
+	cairo_show_text(cr,temp_c)
+end
+
+function check_updates(update)
+	if update == nil then
+		return ""
+	else
+		return update
+	end
+end
+
+function check_icon_position(update)
+	if update == nil then
+		return 120
+	else
+		return update
+	end
 end
 
 function draw_updates(cr, w, h)
@@ -105,7 +128,8 @@ function draw_updates(cr, w, h)
 	nvidia = conky_parse("${exec grep Nvidia ~/.conky/conky-dashboard/.updates.txt | cut -d \":\"  -f 2 | xargs}")
 
 	start_y = 380
-	start_x = 120
+	start_x_text = 57
+	
 	-- Updates
 	cairo_select_font_face (cr, "Overpass", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
 	cairo_set_source_rgba(cr, r3, g3, b3, t)
@@ -123,7 +147,7 @@ function draw_updates(cr, w, h)
 	cairo_set_font_size(cr, 18)
 	ct_slackpkg = cairo_text_extents_t:create()
 	cairo_text_extents(cr,"Slackpkg",ct_slackpkg)
-	cairo_move_to(cr,w/2-start_x,start_y)
+	cairo_move_to(cr,start_x_text,start_y)
 	cairo_show_text(cr,"Slackpkg")
 
 	cairo_select_font_face (cr, "Font Awesome 5 Pro Solid", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
@@ -131,9 +155,11 @@ function draw_updates(cr, w, h)
 	r, g, b = hex2rgb(updates_color[slackpkg])
 	cairo_set_source_rgba(cr, r, g, b, t)
 	ct_slackpkg_update = cairo_text_extents_t:create()
-	cairo_text_extents(cr,updates[slackpkg],ct_slackpkg_update)
-	cairo_move_to(cr,w/2+start_x,start_y)
-	cairo_show_text(cr,updates[slackpkg])
+	icon_slackpkg = check_updates(updates[slackpkg])
+	icon_pos_slackpkg = check_icon_position(updates_pos[slackpkg])
+	cairo_text_extents(cr,icon_slackpkg ,ct_slackpkg_update)
+	cairo_move_to(cr,w/2+icon_pos_slackpkg ,start_y)
+	cairo_show_text(cr,icon_slackpkg )
 
 	-- sbopkg
 	cairo_select_font_face (cr, "Overpass", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
@@ -142,7 +168,7 @@ function draw_updates(cr, w, h)
 	cairo_set_font_size(cr, 18)
 	ct_sbopkg = cairo_text_extents_t:create()
 	cairo_text_extents(cr,"Sbopkg",ct_sbopkg)
-	cairo_move_to(cr,w/2-start_x,start_y+30)
+	cairo_move_to(cr,start_x_text,start_y+30)
 	cairo_show_text(cr,"Sbopkg")
 
 	cairo_select_font_face (cr, "Font Awesome 5 Pro Solid", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
@@ -150,9 +176,11 @@ function draw_updates(cr, w, h)
 	r, g, b = hex2rgb(updates_color[sbopkg])
 	cairo_set_source_rgba(cr, r, g, b, t)
 	ct_sbopkg_update = cairo_text_extents_t:create()
-	cairo_text_extents(cr,updates[sbopkg],ct_sbopkg_update)
-	cairo_move_to(cr,w/2+start_x,start_y+30)
-	cairo_show_text(cr,updates[sbopkg])
+	icon_sbopkg = check_updates(updates[sbopkg])
+	icon_pos_sbopkg = check_icon_position(updates_pos[sbopkg])
+	cairo_text_extents(cr,icon_sbopkg ,ct_sbopkg_update)
+	cairo_move_to(cr,w/2+icon_pos_sbopkg,start_y+30)
+	cairo_show_text(cr,icon_sbopkg)
 
 	-- Linux
 	cairo_select_font_face (cr, "Overpass", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
@@ -161,7 +189,7 @@ function draw_updates(cr, w, h)
 	cairo_set_font_size(cr, 18)
 	ct_linux = cairo_text_extents_t:create()
 	cairo_text_extents(cr,"Linux",ct_linux)
-	cairo_move_to(cr,w/2-start_x,start_y+60)
+	cairo_move_to(cr,start_x_text,start_y+60)
 	cairo_show_text(cr,"Linux")
 
 	cairo_select_font_face (cr, "Font Awesome 5 Pro Solid", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
@@ -169,9 +197,11 @@ function draw_updates(cr, w, h)
 	r, g, b = hex2rgb(updates_color[linux])
 	cairo_set_source_rgba(cr, r, g, b, t)
 	ct_linux_update = cairo_text_extents_t:create()
-	cairo_text_extents(cr,updates[linux],ct_linux_update)
-	cairo_move_to(cr,w/2+start_x,start_y+60)
-	cairo_show_text(cr,updates[linux])
+	icon_linux = check_updates(updates[linux])
+	icon_pos_linux = check_icon_position(updates_pos[linux])
+	cairo_text_extents(cr,icon_linux,ct_linux_update)
+	cairo_move_to(cr,w/2+icon_pos_linux,start_y+60)
+	cairo_show_text(cr,icon_linux)
 
 	-- Chrome
 	cairo_select_font_face (cr, "Overpass", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
@@ -180,7 +210,7 @@ function draw_updates(cr, w, h)
 	cairo_set_font_size(cr, 18)
 	ct_chrome = cairo_text_extents_t:create()
 	cairo_text_extents(cr,"Chrome",ct_chrome)
-	cairo_move_to(cr,w/2-start_x,start_y+90)
+	cairo_move_to(cr,start_x_text,start_y+90)
 	cairo_show_text(cr,"Chrome")
 
 	cairo_select_font_face (cr, "Font Awesome 5 Pro Solid", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
@@ -188,9 +218,11 @@ function draw_updates(cr, w, h)
 	r, g, b = hex2rgb(updates_color[chrome])
 	cairo_set_source_rgba(cr, r, g, b, t)
 	ct_chrome_update = cairo_text_extents_t:create()
-	cairo_text_extents(cr,updates[chrome],ct_chrome_update)
-	cairo_move_to(cr,w/2+start_x,start_y+90)
-	cairo_show_text(cr,updates[chrome])
+	icon_chrome = check_updates(updates[chrome])
+	icon_pos_chrome = check_icon_position(updates_pos[chrome])
+	cairo_text_extents(cr,icon_chrome,ct_chrome_update)
+	cairo_move_to(cr,w/2+icon_pos_chrome,start_y+90)
+	cairo_show_text(cr,icon_chrome)
 
 	-- Skype
 	cairo_select_font_face (cr, "Overpass", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
@@ -199,7 +231,7 @@ function draw_updates(cr, w, h)
 	cairo_set_font_size(cr, 18)
 	ct_skype = cairo_text_extents_t:create()
 	cairo_text_extents(cr,"Skype",ct_skype)
-	cairo_move_to(cr,w/2-start_x,start_y+120)
+	cairo_move_to(cr,start_x_text,start_y+120)
 	cairo_show_text(cr,"Skype")
 
 	cairo_select_font_face (cr, "Font Awesome 5 Pro Solid", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
@@ -207,9 +239,11 @@ function draw_updates(cr, w, h)
 	r, g, b = hex2rgb(updates_color[skype])
 	cairo_set_source_rgba(cr, r, g, b, t)
 	ct_skype_update = cairo_text_extents_t:create()
-	cairo_text_extents(cr,updates[skype],ct_skype_update)
-	cairo_move_to(cr,w/2+start_x,start_y+120)
-	cairo_show_text(cr,updates[skype])
+	icon_skype = check_updates(updates[skype])
+	icon_pos_skype = check_icon_position(updates_pos[skype])
+	cairo_text_extents(cr,icon_skype ,ct_skype_update)
+	cairo_move_to(cr,w/2+icon_pos_skype,start_y+120)
+	cairo_show_text(cr,icon_skype)
 
 	-- Nvidia
 	cairo_select_font_face (cr, "Overpass", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
@@ -218,7 +252,7 @@ function draw_updates(cr, w, h)
 	cairo_set_font_size(cr, 18)
 	ct_nvidia = cairo_text_extents_t:create()
 	cairo_text_extents(cr,"Nvidia",ct_nvidia)
-	cairo_move_to(cr,w/2-start_x,start_y+150)
+	cairo_move_to(cr,start_x_text,start_y+150)
 	cairo_show_text(cr,"Nvidia")
 
 	cairo_select_font_face (cr, "Font Awesome 5 Pro Solid", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
@@ -226,31 +260,34 @@ function draw_updates(cr, w, h)
 	r, g, b = hex2rgb(updates_color[nvidia])
 	cairo_set_source_rgba(cr, r, g, b, t)
 	ct_nvidia_update = cairo_text_extents_t:create()
-	cairo_text_extents(cr,updates[nvidia],ct_nvidia_update)
-	cairo_move_to(cr,w/2+start_x,start_y+150)
-	cairo_show_text(cr,updates[nvidia])
+	icon_nvidia = check_updates(updates[nvidia])
+	icon_pos_nvidia = check_icon_position(updates_pos[nvidia])
+	cairo_text_extents(cr,icon_nvidia,ct_nvidia_update)
+	cairo_move_to(cr,w/2+icon_pos_nvidia,start_y+150)
+	cairo_show_text(cr,icon_nvidia)
 end
 
 function draw_hdd(cr, w, h)
 
 	start_y = 652
+	start_x = 63
 	cairo_select_font_face (cr, "Font Awesome 5 Pro Light", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
 	cairo_set_font_size(cr, 42)
 	cairo_set_source_rgba(cr, r3, g3, b3, t)
 	ct_hdd = cairo_text_extents_t:create()
 	cairo_text_extents(cr, "", ct_hdd)
-	cairo_move_to(cr,70,start_y + 15)
+	cairo_move_to(cr,start_x,start_y + 15)
 	cairo_show_text(cr,"")
 
     fs_used = math.floor(11*tonumber(conky_parse("${fs_used_perc " .. "/" .. "}"))/100)
     for i=0, 10 do
 		cairo_set_source_rgba(cr, r3, g3, b3, t)
-		cairo_arc(cr,140+20*i,start_y,6,0*math.pi/180,360*math.pi/180)
+		cairo_arc(cr,start_x+70+20*i,start_y,6,0*math.pi/180,360*math.pi/180)
 		cairo_fill(cr)
     end
     for i=0, fs_used do
 		cairo_set_source_rgba(cr, r4, g4, b4, t)
-		cairo_arc(cr,140+20*i,start_y,6,0*math.pi/180,360*math.pi/180)
+		cairo_arc(cr,start_x+70+20*i,start_y,6,0*math.pi/180,360*math.pi/180)
 		cairo_fill(cr)
 	end
 
@@ -260,26 +297,38 @@ function draw_hdd(cr, w, h)
 	battery_status = string.sub(battery_status,1,1)
 
 	cairo_set_source_rgba(cr, r3, g3, b3, t)
-	ct_hdd = cairo_text_extents_t:create()
+	ct_battery = cairo_text_extents_t:create()
 
 	if battery_status == "C" or battery_status == "F" then
-		cairo_text_extents(cr, "", ct_hdd)
-		cairo_move_to(cr,70,start_y + 80 + 15)
+		cairo_text_extents(cr, "", ct_battery)
+		cairo_move_to(cr,start_x,start_y + 95)
 		cairo_show_text(cr,"")
 	elseif battery_status == "D" then
-		cairo_text_extents(cr, "", ct_hdd)
-		cairo_move_to(cr,70,start_y + 80 + 15)
+		cairo_text_extents(cr, "", ct_battery)
+		cairo_move_to(cr,start_x,start_y + 95)
 		cairo_show_text(cr,"")
+	elseif battery_status == "F" then
+		cairo_text_extents(cr, "", ct_battery)
+		cairo_move_to(cr,start_x,start_y + 95)
+		cairo_show_text(cr,"")
+	elseif battery_status == "U" then
+		cairo_text_extents(cr, "", ct_battery)
+		cairo_move_to(cr,start_x,start_y + 95)
+		cairo_show_text(cr,"")
+	elseif battery_status == "E" then
+		cairo_text_extents(cr, "", ct_battery)
+		cairo_move_to(cr,start_x,start_y + 95)
+		cairo_show_text(cr,"")
 	end
 
     for i=0, 10 do
     	cairo_set_source_rgba(cr, r3, g3, b3, t)
-    	cairo_arc(cr,140+20*i,start_y+80,6,0*math.pi/180,360*math.pi/180)
+    	cairo_arc(cr,start_x+70+20*i,start_y+80,6,0*math.pi/180,360*math.pi/180)
     	cairo_fill(cr)
     end
     for i=0, battery_percentage do
     	cairo_set_source_rgba(cr, r4, g4, b4, t)
-    	cairo_arc(cr,140+20*i,start_y+80,6,0*math.pi/180,360*math.pi/180)
+    	cairo_arc(cr,start_x+70+20*i,start_y+80,6,0*math.pi/180,360*math.pi/180)
     	cairo_fill(cr)
     end
 end
@@ -350,8 +399,12 @@ function draw_widgets(cr)
 	icons["01d"]=""
 
 	updates = {}
-	updates["No updates available"]=""
+	updates["No updates available"]=""
 	updates["Updates available"]=""
+
+	updates_pos = {}
+	updates_pos["No updates available"]=123
+	updates_pos["Updates available"]=120
 
 	updates_color = {}
 	updates_color["No updates available"]=color3

@@ -1,0 +1,6 @@
+Slackpkg: No updates available
+Sbopkg: No updates available
+Linux: No updates available
+Nvidia: No updates available
+Google-Chrome: No updates available
+Skype: No updates available
