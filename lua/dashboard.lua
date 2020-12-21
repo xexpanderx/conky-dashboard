@@ -352,11 +352,11 @@ end
 function draw_widgets(cr)
 	local w,h=conky_window.width,conky_window.height
 	-- Api key
-	api_key="13aad301dd37412e01c6c3d4abe0b12e"
+	api_key="XXXXXXXX"
 	-- City
-	city="Cluj-Napoca"
+	city="XXXXXXXX"
 	-- Country code
-	ccode="RO"
+	ccode="XXXXXXXX"
 	-- Panel background
 	color0="#20232C"
 	-- Border background
