@@ -210,7 +210,7 @@ function draw_indicators(cr, w, h)
     	cairo_fill(cr)
 	end
 	
-	if battery_percentage < 2 then
+	if battery_percentage < 3 and battery_status ~= "C" then
 		battery_percentage_string = conky_parse("${battery_percent}")
 		io.popen("dunstify -a battery -i ~/.local/share/icons/Workspace/warning/exclamation-circle.svg \"Charge your battery! (" .. battery_percentage_string .. "%)\"")
 	end
@@ -235,11 +235,11 @@ end
 function draw_widgets(cr)
 	local w,h=conky_window.width,conky_window.height
 	-- ### Api key ###
-	api_key="[APIKEY]"
+	api_key="[API_KEY]"
 	-- ### City ###
 	city="[CITY]"
 	-- ### Country code ###
-	ccode="[COUNTRYCODE]"
+	ccode="[COUNTRY_CODE]"
 	-- ### Panel background ###
 	color0="#20232C"
 	-- ### Border background ###
