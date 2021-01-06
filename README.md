@@ -35,7 +35,7 @@ You need to fill with your OpenWeather API, City and Country-code in `dashboard.
     
     ccode="[COUNTRY_CODE]"
   ### cronjob
-  You also need to fill in with the same information as above in your crontab:
+  You need to add a cronjob for the scripts that collect updates and weather information. In addition, you need to fill in with the same information as above (API_KEY, CITY and COUNTRY_CODE):
 
     */5 * * * * ~/.conky/conky-dashboard/slackware_updates.bash -r current --sbopkg --nvidia --kernel --google-chrome --skype > ~/.conky/conky-dashboard/.updates.txt
     */5 * * * * python3 ~/.conky/conky-dashboard/openweather.py --api_key API_KEY --city CITY --ccode COUNTRY_CODE --get_weather_icon --get_temp_c > ~/.conky/conky-dashboard/.weather.txt
