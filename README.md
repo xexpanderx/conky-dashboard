@@ -5,6 +5,7 @@
 ## Dependencies
 
  - xdotool
+ - w3m
  - Font Awesome **Pro** (not tested with Free version)
  - pyowm
  - sbopkg
