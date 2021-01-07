@@ -11,6 +11,7 @@
  - Google Chrome
  - Nvidia proprietary driver
  - Skype
+ - OpenWeatherMap API key
 
 ## Install
 
@@ -22,7 +23,7 @@
 ## Configuration
 
 ### dashboard.lua
-You need to fill with your OpenWeather API, City and Country-code in `dashboard.lua` in order to fetch weather information:
+You need to fill in with your OpenWeatherMap API key, City and Country-code in `dashboard.lua` in order to fetch weather information:
 
     -- ### Api key ###
     api_key="[API_KEY]"
