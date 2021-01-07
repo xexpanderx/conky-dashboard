@@ -48,3 +48,5 @@ You need to fill in with your OpenWeatherMap API key, City and Country-code in `
  
 
     ~/.conky/conky-dashboard/start_conky.sh
+
+**OBS**: The conky does not show up until you do mouse-over on your Top-Right corner of the screen. 
