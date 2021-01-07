@@ -19,6 +19,7 @@
     mkdir -p ~/.conky/
     cp -r conky-dashboard ~/.conky/
     chmod +x ~/.conky/conky-dashboard/start_conky.sh
+    chmod +x ~/.conky/conky-dashboard/slackware_updates.bash
 
 ## Configuration
 
