@@ -14,6 +14,7 @@
  - Nvidia proprietary driver
  - Skype
  - OpenWeatherMap API key
+ - dunst
 
 ## Install
 
