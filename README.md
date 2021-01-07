@@ -8,6 +8,7 @@
  - Font Awesome **Pro** (not tested with Free version)
  - pyowm
  - sbopkg
+ - slackpkgplus
  - Google Chrome
  - Nvidia proprietary driver
  - Skype
