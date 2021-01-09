@@ -300,6 +300,7 @@ function draw_widgets(cr)
 	y=tonumber(conky_parse("${exec xdotool search --name conky-dashboard | sed -n 1p | xargs xdotool getwindowgeometry --shell | grep 'Y' | tr -d 'Y='}"))
 	mouse_x = tonumber(conky_parse("${exec xdotool getmouselocation --shell | grep 'X' | tr -d 'X='}"))
 	mouse_y = tonumber(conky_parse("${exec xdotool getmouselocation --shell | grep 'Y' | tr -d 'Y='}"))
+	view = false
 
 	if x ~= nil and y ~= nil and mouse_x ~= nil and mouse_y ~= nil then
 		y_max = y+2
@@ -309,10 +310,12 @@ function draw_widgets(cr)
 			t0_panel=1
 			t1_border=0.1
 			t=1
-		else
+			view = true
+		elseif mouse_x < x then
 			t0_panel=0
 			t1_border=0
 			t=0
+			view = false
 		end
 
 		draw_panel(cr, w, h)
