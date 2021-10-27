@@ -5,13 +5,16 @@
 ## Dependencies
 
  - xdotool
+ - w3m
  - Font Awesome **Pro** (not tested with Free version)
  - pyowm
  - sbopkg
+ - slackpkg+
  - Google Chrome
  - Nvidia proprietary driver
  - Skype
  - OpenWeatherMap API key
+ - dunst (notification daemon)
 
 ## Install
 
@@ -19,6 +22,7 @@
     mkdir -p ~/.conky/
     cp -r conky-dashboard ~/.conky/
     chmod +x ~/.conky/conky-dashboard/start_conky.sh
+    chmod +x ~/.conky/conky-dashboard/slackware_updates.bash
 
 ## Configuration
 
@@ -44,3 +48,5 @@ You need to fill in with your OpenWeatherMap API key, City and Country-code in `
  
 
     ~/.conky/conky-dashboard/start_conky.sh
+
+**OBS**: The conky does not show up until you do mouse-over on your Top-Right corner of the screen. 
