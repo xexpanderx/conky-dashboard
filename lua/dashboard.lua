@@ -42,6 +42,33 @@ function panel_border(cr, w, h)
 	cairo_fill(cr)
 end
 
+function bottom_bar(cr, w, h)
+	cairo_set_source_rgba(cr, r3, g3, b3, t_bottom)
+	cairo_move_to(cr,2,h)
+	cairo_rel_line_to(cr,w-2,0)
+	cairo_rel_line_to(cr,0,-100)
+	cairo_rel_line_to(cr,-w+2,0)
+    cairo_close_path(cr)
+	cairo_fill(cr)
+
+	ct_shutdown = text_dimensions(cr, "", "Font Awesome 6 Pro Solid", 44)
+	draw_text(cr, r10, g10, b10, t, "", w/3-ct_shutdown.width/2*4, h-40)
+	ct_lock = text_dimensions(cr, "", "Font Awesome 6 Pro Solid", 44)
+	draw_text(cr, r11, g11, b11, t, "", w/3*2-ct_lock.width/2*4, h-40)
+	ct_reboot = text_dimensions(cr, "", "Font Awesome 6 Pro Solid", 44)
+	draw_text(cr, r12, g12, b12, t, "", w/3*3-ct_reboot.width/2*4, h-40)
+
+	if t == 1 then
+		if mouse_y > (h-40-ct_shutdown.height) and mouse_y < (h-40) and mouse_x > (x+w/3-ct_shutdown.width/2*4) and mouse_x < (x+w/3-ct_shutdown.width/2*4+ct_shutdown.width) then
+			io.popen("xdotool search --name conky-dashboard | sed -n 1p | xargs -I {} xdotool behave {} mouse-click /usr/bin/loginctl poweroff& sleep 10 && pkill -f \"mouse-click exec\"")
+		elseif mouse_y > (h-40-ct_lock.height) and mouse_y < (h-40) and mouse_x > (x+w/3*2-ct_lock.width/2*4) and mouse_x < (x+w/3*2-ct_lock.width/2*4+ct_lock.width) then
+			io.popen("xdotool search --name conky-dashboard | sed -n 1p | xargs -I {} xdotool behave {} mouse-click exec /usr/bin/i3lock -B 4 -k --timecolor=ffffff80 --datecolor=ffffff99& sleep 10 && pkill -f \"mouse-click exec\"")
+		elseif mouse_y > (h-40-ct_reboot.height) and mouse_y < (h-40) and mouse_x > (x+w/3*3-ct_reboot.width/2*4) and mouse_x < (x+w/3*3-ct_reboot.width/2*4+ct_reboot.width) then
+			io.popen("xdotool search --name conky-dashboard | sed -n 1p | xargs -I {} xdotool behave {} mouse-click exec /usr/bin/loginctl reboot& sleep 10 && pkill -f \"mouse-click exec\"")
+		end
+	end
+end
+
 function text_dimensions(cr, text, font, font_size)
 	cairo_select_font_face (cr, font, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
 	cairo_set_font_size(cr, font_size)
@@ -84,7 +111,7 @@ function draw_weather(cr, w, h)
 	end
 
 	-- ### Weather icon ###
-	ct_weather = text_dimensions(cr, icon, "Font Awesome 5 Pro Light", 92)
+	ct_weather = text_dimensions(cr, icon, "Font Awesome 6 Pro Solid", 92)
 	draw_text(cr, r4, g4, b4, t, icon, w/2+20, ct_weather.height/2+ct_clock.height+ct_date.height+136)
 	-- ### Temperature ###
  	ct_temperature = text_dimensions(cr, temp_c, "Overpass", 52)
@@ -140,11 +167,11 @@ function draw_updates(cr, w, h)
 	start_x_text = 57
 	font = "Overpass"
 	font_size = 18
-	icon_font = "Font Awesome 5 Pro Solid"
+	icon_font = "Font Awesome 6 Pro Light"
 	icon_font_size = 18
 	-- ### Updates ###
 	ct_updates = text_dimensions(cr, "Updates", font, font_size)
-	draw_text(cr, r3, g3, b3, t, "Updates", w/2-ct_updates.width/2, start_y)
+	draw_text(cr, r6, g6, b6, t, "Updates", w/2-ct_updates.width/2, start_y)
 	start_y = start_y + 35
 	-- ### Slackpkg ###
 	draw_update(cr, slackpkg, "Slackpkg", font, font_size, icon_font, icon_font_size, start_x_text, start_y, w/2, start_y)
@@ -163,21 +190,21 @@ end
 function draw_indicators(cr, w, h)
 	start_y = 652
 	start_x = 63
-	font = "Font Awesome 5 Pro Light"
+	font = "Font Awesome 6 Pro Solid"
 	font_size = 42
 
     -- ### HDD ###
 	ct_hdd = text_dimensions(cr, "", font, font_size)
-    draw_text(cr, r3, g3, b3, t, "", start_x,start_y + 15)
+    draw_text(cr, r7, g7, b7, t, "", start_x,start_y + 15)
 
     fs_used = math.floor(10*tonumber(conky_parse("${fs_used_perc " .. "/" .. "}"))/100)
     for i=0, 10 do
-		cairo_set_source_rgba(cr, r3, g3, b3, t)
+		cairo_set_source_rgba(cr, r7, g7, b7, t)
 		cairo_arc(cr,start_x+70+20*i,start_y,6,0*math.pi/180,360*math.pi/180)
 		cairo_fill(cr)
     end
     for i=0, fs_used do
-		cairo_set_source_rgba(cr, r4, g4, b4, t)
+		cairo_set_source_rgba(cr, r9, g9, b9, t)
 		cairo_arc(cr,start_x+70+20*i,start_y,6,0*math.pi/180,360*math.pi/180)
 		cairo_fill(cr)
 	end
@@ -188,29 +215,29 @@ function draw_indicators(cr, w, h)
 	text_dimensions(cr, "", font, font_size)
 
 	if battery_status == "C" or battery_status == "F" then
-		draw_text(cr, r3, g3, b3, t, "", start_x,start_y + 95)
+		draw_text(cr, r7, g7, b7, t, "", start_x,start_y + 95)
 	elseif battery_status == "D" then
-		draw_text(cr, r3, g3, b3, t, "", start_x,start_y + 95)
+		draw_text(cr, r7, g7, b7, t, "", start_x,start_y + 95)
 	elseif battery_status == "F" then
-		draw_text(cr, r3, g3, b3, t, "", start_x,start_y + 95)
+		draw_text(cr, r7, g7, b7, t, "", start_x,start_y + 95)
 	elseif battery_status == "U" then
-		draw_text(cr, r3, g3, b3, t, "", start_x,start_y + 95)
+		draw_text(cr, r7, g7, b7, t, "", start_x,start_y + 95)
 	elseif battery_status == "E" then
-		draw_text(cr, r3, g3, b3, t, "", start_x,start_y + 95)
+		draw_text(cr, r7, g7, b7, t, "", start_x,start_y + 95)
 	end
 
     for i=0, 10 do
-    	cairo_set_source_rgba(cr, r3, g3, b3, t)
+    	cairo_set_source_rgba(cr, r7, g7, b7, t)
     	cairo_arc(cr,start_x+70+20*i,start_y+80,6,0*math.pi/180,360*math.pi/180)
     	cairo_fill(cr)
     end
     for i=0, battery_percentage do
-    	cairo_set_source_rgba(cr, r4, g4, b4, t)
+    	cairo_set_source_rgba(cr, r9, g9, b9, t)
     	cairo_arc(cr,start_x+70+20*i,start_y+80,6,0*math.pi/180,360*math.pi/180)
     	cairo_fill(cr)
 	end
 	
-	if battery_percentage < 3 and battery_status ~= "C" then
+	if battery_percentage < 2 and battery_status ~= "C" then
 		battery_percentage_string = conky_parse("${battery_percent}")
 		io.popen("dunstify -a battery -i ~/.local/share/icons/Workspace/warning/exclamation-circle.svg \"Charge your battery! (" .. battery_percentage_string .. "%)\"")
 	end
@@ -230,28 +257,44 @@ function draw_panel(cr, w, h)
 	draw_updates(cr, w, h)
     -- ### Indicators ###
 	draw_indicators(cr, w, h)
+	-- ### Bottom bar ###
+	bottom_bar(cr, w, h)
 end
 
 function draw_widgets(cr)
 	local w,h=conky_window.width,conky_window.height
 	-- ### Api key ###
-	api_key="[API_KEY]"
+	api_key=""
 	-- ### City ###
-	city="[CITY]"
+	city=""
 	-- ### Country code ###
-	ccode="[COUNTRY_CODE]"
+	ccode=""
 	-- ### Panel background ###
-	color0="#20232C"
+	color0="#262329"
 	-- ### Border background ###
 	color1="#000000"
-	-- ### Text colors ###
-	color2="#A18673"
+	-- ### Update Text colors ###
+	color2="#6E686A"
 	-- ### Update border ###
-	color3="#404047"
+	color3="#1E1C21"
 	-- ### Weather icon colors ###
-	color4="#BE5C56"
+	color4="#524E51"
 	-- ### Other ###
 	color5="#97B19C"
+	-- ### Normal text ###
+	color6="#6E686A"
+	-- ## Indicator icon color ###
+	color7="#524E51"
+	-- ### Update icon color ###
+	color8="#FB6A67"
+	-- ### Circle indicator color ###
+	color9="#7DA853"
+	-- ### Shutdown icon ###
+	color10="#9E4442"
+	-- ### Lock icon ###
+	color11="#006E6F"
+	-- ### Reboot icon ###
+	color12="#695875"
 
 	r0, g0, b0 = hex2rgb(color0)
 	r1, g1, b1 = hex2rgb(color1)
@@ -259,6 +302,13 @@ function draw_widgets(cr)
 	r3, g3, b3 = hex2rgb(color3)
 	r4, g4, b4 = hex2rgb(color4)
 	r5, g5, b5 = hex2rgb(color5)
+	r6, g6, b6 = hex2rgb(color6)
+	r7, g7, b7 = hex2rgb(color7)
+	r8, g8, b8 = hex2rgb(color8)
+	r9, g9, b9 = hex2rgb(color9)
+	r10, g10, b10 = hex2rgb(color10)
+	r11, g11, b11 = hex2rgb(color11)
+	r12, g12, b12 = hex2rgb(color12)
 	-- ### Weather icons ###
  	icons = {}
 	icons["50n"]=""
@@ -289,11 +339,11 @@ function draw_widgets(cr)
 	updates_pos["Updates available"]=120
 
 	updates_color = {}
-	updates_color["No updates available"]=color3
-	updates_color["Updates available"]=color4
+	updates_color["No updates available"]=color6
+	updates_color["Updates available"]=color8
 
 	updates_text = {}
-	updates_text["No updates available"]=color3
+	updates_text["No updates available"]=color6
 	updates_text["Updates available"]=color2
 	-- ### Get coordinates of conky window and mouse ###
 	x=tonumber(conky_parse("${exec xdotool search --name conky-dashboard | sed -n 1p | xargs xdotool getwindowgeometry --shell | grep 'X' | tr -d 'X='}"))
@@ -308,10 +358,12 @@ function draw_widgets(cr)
 		if mouse_x > x_max and mouse_y > y and mouse_y < y_max then
 			t0_panel=1
 			t1_border=0.1
+			t_bottom=0.4
 			t=1
-		else
+		elseif mouse_x < x then
 			t0_panel=0
 			t1_border=0
+			t_bottom=0
 			t=0
 		end
 
