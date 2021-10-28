@@ -60,7 +60,7 @@ function bottom_bar(cr, w, h)
 
 	if t == 1 then
 		if mouse_y > (h-40-ct_shutdown.height) and mouse_y < (h-40) and mouse_x > (x+w/3-ct_shutdown.width/2*4) and mouse_x < (x+w/3-ct_shutdown.width/2*4+ct_shutdown.width) then
-			io.popen("xdotool search --name conky-dashboard | sed -n 1p | xargs -I {} xdotool behave {} mouse-click /usr/bin/loginctl poweroff& sleep 10 && pkill -f \"mouse-click exec\"")
+			io.popen("xdotool search --name conky-dashboard | sed -n 1p | xargs -I {} xdotool behave {} mouse-click exec /usr/bin/loginctl poweroff& sleep 10 && pkill -f \"mouse-click exec\"")
 		elseif mouse_y > (h-40-ct_lock.height) and mouse_y < (h-40) and mouse_x > (x+w/3*2-ct_lock.width/2*4) and mouse_x < (x+w/3*2-ct_lock.width/2*4+ct_lock.width) then
 			io.popen("xdotool search --name conky-dashboard | sed -n 1p | xargs -I {} xdotool behave {} mouse-click exec /usr/bin/i3lock -B 4 -k --timecolor=ffffff80 --datecolor=ffffff99& sleep 10 && pkill -f \"mouse-click exec\"")
 		elseif mouse_y > (h-40-ct_reboot.height) and mouse_y < (h-40) and mouse_x > (x+w/3*3-ct_reboot.width/2*4) and mouse_x < (x+w/3*3-ct_reboot.width/2*4+ct_reboot.width) then
